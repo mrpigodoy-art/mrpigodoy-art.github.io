@@ -142,7 +142,10 @@ textarea{height:160px;resize:vertical}
 
 /* Lightbox */
 .lb{position:fixed;inset:0;z-index:50;display:grid;grid-template-rows:1fr auto;place-items:center;padding:20px 64px 10px;background:rgba(32,29,22,.95)}
-.lb img{max-width:100%;max-height:calc(100vh - 80px);object-fit:contain}
+.lb img{max-width:100%;max-height:calc(100vh - 80px);object-fit:contain;will-change:opacity,transform}
+.lb{animation:lbIn .2s ease-out}
+@keyframes lbIn{from{opacity:0}}
+@media(prefers-reduced-motion:reduce){.lb{animation:none}}
 .lb p{margin:0;color:var(--cream)}
 .lb button{position:absolute;background:none;border:0;color:var(--cream);font:52px/1 VT323,monospace;cursor:pointer;padding:8px 14px}
 .lb button:hover{color:var(--khaki)}
@@ -267,8 +270,22 @@ function lightbox(items,start,label){
  box.setAttribute('role','dialog');box.setAttribute('aria-modal','true');box.setAttribute('aria-label',label);
  const x=el('button','x','×'),pv=el('button','pv','‹'),nx=el('button','nx','›');
  x.setAttribute('aria-label','Close');pv.setAttribute('aria-label','Previous');nx.setAttribute('aria-label','Next');
- const show=()=>{pic.src=items[i].src+'.jpg';pic.alt=label+' '+pad(i+1);cap.textContent=pad(i+1)+' / '+pad(items.length)};
- const go=d=>{i=(i+d+items.length)%items.length;show()};
+ /* Subtle transition: the current piece slides a little and fades out, the next one slides in from the other side */
+ const anim=(k,o)=>calm||!pic.animate?Promise.resolve():pic.animate(k,o).finished.catch(()=>{});
+ let busy=0;
+ const preload=n=>{const j=(n+items.length)%items.length,p=new Image();p.src=items[j].src+'.jpg'};
+ const show=(d=0)=>{
+  const t=++busy,src=items[i].src+'.jpg';
+  cap.textContent=pad(i+1)+' / '+pad(items.length);
+  const swap=()=>{if(t!==busy)return;
+   pic.onload=pic.onerror=()=>{if(t!==busy)return;pic.style.opacity='';anim([{opacity:0,transform:`translateX(${d*28}px) scale(${d?1:.97})`},{opacity:1,transform:'none'}],{duration:d?280:240,easing:'cubic-bezier(.2,.7,.3,1)'})};
+   if(pic.src.endsWith(src))return pic.onload();
+   pic.src=src;pic.alt=label+' '+pad(i+1)};
+  if(d&&pic.src){anim([{opacity:1,transform:'none'},{opacity:0,transform:`translateX(${-d*20}px)`}],{duration:140,easing:'ease-in'}).then(()=>{if(t===busy){pic.style.opacity='0';swap()}})}
+  else{pic.style.opacity='0';swap()}
+  preload(i+1);preload(i-1);
+ };
+ const go=d=>{i=(i+d+items.length)%items.length;show(d)};
  const close=()=>{box.remove();removeEventListener('keydown',key);document.body.style.overflow='';prev&&prev.focus()};
  const key=e=>{if(e.key==='Escape')close();if(e.key==='ArrowLeft')go(-1);if(e.key==='ArrowRight')go(1)};
  x.onclick=close;pv.onclick=()=>go(-1);nx.onclick=()=>go(1);
