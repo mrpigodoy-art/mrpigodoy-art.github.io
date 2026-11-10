@@ -1,0 +1,29 @@
+# Home (landing page) selection, in display order.
+# One original file name per line, from any folder in originales/.
+# After editing, run:  .\build-images.ps1 -Sections HOME
+# Lines starting with # are ignored.
+7.png
+GUT_FORGOTTEN.png
+Manto04.png
+2503_Discord_BDay_MedievalFantasy_CleanLayersForComp.png
+Manto05.png
+8.png
+IMG_0070.jpg
+Manto02.png
+GUT_DIGESSTEDLORD_02.png
+IMG_0074.jpg
+LeCube-Yuga-Style02_V02.png
+6.png
+THEABYSS_PROPDESIGN_EXP01_13.png
+MASK.png
+THEABYSS_PROPDESIGN_EXP01_15.png
+ABYSS_KIT_06.png
+ABYSS_FISSUREKING_03.png
+Manto01.png
+Domestos-Styleframe_06_v01_BLUE.png
+GERM-03.png
+IMG_0073.jpg
+LeCube-Yuga-Style01-FNL-2.35.png
+Domestos-Pencil_08_v01.png
+Domestos-Pencil_06_v01.png
+GERM-02.png

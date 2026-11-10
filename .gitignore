@@ -1,0 +1,8 @@
+# Full-resolution originals: never published
+originales/
+# Old versions and experiments kept locally
+_archivo/
+# Local tools and notes
+.claude/
+CLAUDE.md
+images/manifest.json
