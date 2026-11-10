@@ -40,6 +40,17 @@ function Save-Resized($img, [int]$w, [int]$h, [string]$path, [bool]$png, [int]$q
   }
   $bmp.Dispose()
 }
+function Save-Icon($img, [int]$size, [string]$path, $bg, [double]$pad) {
+  if ((Test-Path $path) -and -not $Force) { return }
+  $bmp = New-Object System.Drawing.Bitmap $size, $size, ([System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+  $g = [System.Drawing.Graphics]::FromImage($bmp)
+  $g.InterpolationMode = 'HighQualityBicubic'; $g.SmoothingMode = 'HighQuality'; $g.PixelOffsetMode = 'HighQuality'
+  if ($bg) { $g.Clear([System.Drawing.ColorTranslator]::FromHtml($bg)) } else { $g.Clear([System.Drawing.Color]::Transparent) }
+  $inner = $size * (1 - 2 * $pad); $k = $inner / [math]::Max($img.Width, $img.Height)
+  $w = $img.Width * $k; $h = $img.Height * $k
+  $g.DrawImage($img, [float](($size - $w) / 2), [float](($size - $h) / 2), [float]$w, [float]$h)
+  $g.Dispose(); $bmp.Save($path, [System.Drawing.Imaging.ImageFormat]::Png); $bmp.Dispose()
+}
 function Fit([int]$w, [int]$h, [int]$long) { $s = [math]::Min(1.0, $long / [math]::Max($w, $h)); return @([int][math]::Round($w * $s), [int][math]::Round($h * $s)) }
 function Slug([string]$name) { ($name.ToLower() -replace '[^a-z0-9]+', '-').Trim('-') }
 function HasAlpha($img) {
@@ -59,15 +70,25 @@ if (Test-Path $cachePath) { (Get-Content $cachePath -Raw -Encoding UTF8 | Conver
 
 foreach ($sec in $Sections) {
   if ($sec -eq 'HOME') { continue }   # handled after the sections, from home.txt
-  if ($sec -eq 'HEADER') {            # site title artwork: transparent PNG, 200px tall (sharp at 2x)
+  if ($sec -eq 'HEADER') {
+    # Wide image = site title (transparent PNG, 200px tall). Square-ish image = favicon / app icons.
     $o = Join-Path $out 'header'; New-Item -ItemType Directory -Force $o | Out-Null
-    $f = Files (Join-Path $src $sec) | Select-Object -First 1
-    if ($f) {
+    foreach ($f in Files (Join-Path $src $sec)) {
       $img = [System.Drawing.Image]::FromFile($f.FullName)
-      $h = [math]::Min(200, $img.Height); $w = [int][math]::Round($img.Width * $h / $img.Height)
-      Save-Resized $img $w $h (Join-Path $o 'title.png') $true
-      $data['header'] = [pscustomobject]@{ src = 'images/header/title.png'; w = $w; h = $h }
-      $img.Dispose(); Write-Host "HEADER  $($f.Name)"
+      if ($img.Width / $img.Height -gt 1.5) {
+        $h = [math]::Min(200, $img.Height); $w = [int][math]::Round($img.Width * $h / $img.Height)
+        Save-Resized $img $w $h (Join-Path $o 'title.png') $true
+        $data['header'] = [pscustomobject]@{ src = 'images/header/title.png'; w = $w; h = $h }
+        Write-Host "HEADER title  $($f.Name)"
+      } else {
+        $io = Join-Path $out 'icons'; New-Item -ItemType Directory -Force $io | Out-Null
+        foreach ($s in 16, 32, 48) { Save-Icon $img $s (Join-Path $io "favicon-$s.png") $null 0 }
+        # Home-screen icons can't be transparent on iOS: put the mark on the site's sandstone, with margin
+        Save-Icon $img 180 (Join-Path $io 'apple-touch-icon.png') '#ddcfa3' 0.12
+        foreach ($s in 192, 512) { Save-Icon $img $s (Join-Path $io "icon-$s.png") '#ddcfa3' 0.12 }
+        Write-Host "HEADER icon   $($f.Name)"
+      }
+      $img.Dispose()
     }
     continue
   }
