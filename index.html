@@ -46,7 +46,7 @@ a{color:var(--accent-t)}
 img{-webkit-user-drag:none;user-select:none}
 
 /* Chunky pixel corners (two steps per corner), like the Moonlighter menus */
-.sheet,.tile img,.tile canvas,.photo,.logos div,.bubble-box,.menu,input,textarea,.btn{
+.sheet,.tile img,.tile canvas,.photo,.logos div,.bubble-box,.menu,.burger,.mnav,input,textarea,.btn{
  clip-path:polygon(0 calc(var(--s)*2),var(--s) calc(var(--s)*2),var(--s) var(--s),calc(var(--s)*2) var(--s),calc(var(--s)*2) 0,
  calc(100% - var(--s)*2) 0,calc(100% - var(--s)*2) var(--s),calc(100% - var(--s)) var(--s),calc(100% - var(--s)) calc(var(--s)*2),100% calc(var(--s)*2),
  100% calc(100% - var(--s)*2),calc(100% - var(--s)) calc(100% - var(--s)*2),calc(100% - var(--s)) calc(100% - var(--s)),calc(100% - var(--s)*2) calc(100% - var(--s)),calc(100% - var(--s)*2) 100%,
@@ -157,7 +157,25 @@ footer{text-align:center;padding:56px 16px 24px;color:var(--dim);font-size:20px}
 footer p{margin:10px 0 0}
 
 @media(min-width:861px){header{position:sticky;top:0}}
+/* Mobile menu: pixel button like the text boxes, opens a khaki panel (hidden on desktop) */
+.burger,.mnav{display:none}
+.burger{width:46px;height:44px;padding:0;place-items:center;border:0;cursor:pointer;background:var(--khaki);box-shadow:inset 0 -4px 0 var(--khaki-d)}
+.burger i{display:block;width:20px;height:3px;margin-top:-2px;background:var(--dark);box-shadow:0 -7px 0 var(--dark),0 7px 0 var(--dark)}
+.burger[aria-expanded="true"]{background:var(--khaki-d);box-shadow:inset 0 4px 0 #b9a571}
+.mnav{position:absolute;top:calc(100% - 4px);right:16px;z-index:30;min-width:250px;max-width:calc(100vw - 32px);padding:12px 18px 16px 12px;background:var(--khaki);box-shadow:inset 0 -5px 0 var(--khaki-d);flex-direction:column}
+.mnav button{position:relative;background:none;border:0;text-align:left;color:#6e6248;font:24px/1.3 VT323,monospace;padding:5px 0 5px 18px;cursor:pointer}
+.mnav button:hover,.mnav button.on{color:var(--dark)}
+.mnav button:hover::before,.mnav button.on::before{content:"▸";position:absolute;left:2px}
+.mnav .grp{color:#8f8264;font-size:24px;padding:5px 0 1px 18px}
+.mnav .sub{padding-left:36px}.mnav .sub:hover::before,.mnav .sub.on::before{left:20px}
+/* Mobile galleries: square previews in a tight grid, more pieces per screen */
+.squares{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:6px}
+.squares .tile img{aspect-ratio:1;object-fit:cover}
 @media(max-width:860px){
+ .tabs{display:none}
+ .burger{display:grid}
+ .mnav:not([hidden]){display:flex}
+ .bar{flex-wrap:nowrap}
  .about{grid-template-columns:1fr;gap:26px}
  .photo{max-width:420px}
  .bubble{margin-top:16px}
@@ -173,7 +191,9 @@ footer p{margin:10px 0 0}
 </head>
 <body>
 <header>
- <div class="bar"><a class="logo" href="#home" aria-label="Mister Pi, Fran Godoy Portfolio: home"><i class="title" aria-hidden="true"></i><span>Fran Godoy Portfolio</span></a><nav class="tabs" id="tabs"></nav></div>
+ <div class="bar"><a class="logo" href="#home" aria-label="Mister Pi, Fran Godoy Portfolio: home"><i class="title" aria-hidden="true"></i><span>Fran Godoy Portfolio</span></a><nav class="tabs" id="tabs"></nav>
+  <button class="burger" id="burger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="mnav"><i></i></button></div>
+ <nav class="mnav" id="mnav" hidden aria-label="Menu"></nav>
 </header>
 <main id="view"></main>
 <footer>
@@ -191,6 +211,7 @@ const EMAIL='mrpigodoy@gmail.com';
    While it is empty, "Send Message" opens the visitor's mail app instead. */
 const FORM_ENDPOINT='https://formspree.io/f/xvkapkzd';
 const tabs=document.getElementById('tabs'),view=document.getElementById('view');
+const narrow=matchMedia('(max-width:860px)');
 const calm=matchMedia('(prefers-reduced-motion:reduce)').matches;
 
 /* Image protection (good-faith signal only) */
@@ -260,7 +281,7 @@ function lightbox(items,start,label){
 /* Gallery: masonry that keeps the reading order left to right */
 function gallery(id){
  const items=DATA[id]||[],real=items.length>0,kind=KIND[id];
- const wrap=el('div','masonry'),tiles=[],ratios=[];
+ const wrap=el('div','masonry'),tiles=[],ratios=[],imgs=[];
  const n=real?items.length:12;
  for(let i=0;i<n;i++){
   const b=el('button','tile');b.setAttribute('aria-label',kind+' '+pad(i+1));
@@ -268,14 +289,21 @@ function gallery(id){
    const it=items[i],t=img(it.src+'-md.jpg',kind+' '+pad(i+1));
    t.width=1100;t.height=Math.round(1100*it.h/it.w);t.loading='lazy';t.decoding='async';t.onload=()=>t.classList.add('ok');if(t.complete)t.classList.add('ok');
    const chip=i%5===2?'chip-t':i%7===4?'chip-r':i%6===5?'chip-b':i%11===8?'chip-l':'';if(chip)t.classList.add(chip);
-   b.appendChild(t);b.onclick=()=>lightbox(items,i,kind);ratios.push(it.h/it.w);
+   b.appendChild(t);b.onclick=()=>lightbox(items,i,kind);ratios.push(it.h/it.w);imgs[i]=t;
   }else{b.appendChild(sprite(i+id.length*31));b.style.cursor='default';ratios.push(1)}
   tiles.push(b);
  }
- let cols=0;
+ let mode='';
+ /* Phones get small square previews (more pieces per screen); larger screens get the masonry */
+ const useSrc=size=>imgs.forEach((t,i)=>{const want=items[i].src+size;if(!t.src.endsWith(want)){t.classList.remove('ok');t.src=want}});
  const layout=()=>{
+  if(narrow.matches){
+   if(mode==='sq')return;mode='sq';
+   wrap.className='squares';useSrc('-sm.jpg');wrap.replaceChildren(...tiles);return;
+  }
   const w=wrap.clientWidth||innerWidth,c=w>=1500?5:w>=1150?4:w>=800?3:w>=480?2:1;
-  if(c===cols)return;cols=c;
+  if(mode===String(c))return;mode=String(c);
+  wrap.className='masonry';useSrc('-md.jpg');
   const colEls=Array.from({length:c},()=>el('div','col')),h=new Array(c).fill(0);
   tiles.forEach((t,i)=>{const k=h.indexOf(Math.min(...h));colEls[k].appendChild(t);h[k]+=ratios[i]+.03});
   wrap.replaceChildren(...colEls);
@@ -345,11 +373,20 @@ function route(){
   SUBS.forEach(([sh,sl])=>{const s=el('button',sh===id?'on':'',sl);s.onclick=()=>{dd.classList.remove('open');location.hash=sh};menu.appendChild(s)});
   dd.append(b,menu);return dd;
  }));
+ /* Mobile panel: same sections, with the Animation projects listed under their group */
+ const mb=(h,l,cls)=>{const b=el('button',(cls||'')+(h===id?' on':''),l);b.onclick=()=>{setMenu(false);location.hash=h};return b};
+ mnav.replaceChildren(...TABS.flatMap(([h,l])=>h!=='animation'?[mb(h,l)]:[el('div','grp',l),...SUBS.map(([sh,sl])=>mb(sh,sl,'sub'))]));
+ setMenu(false);
  view.classList.toggle('wide',id in KIND);
  view.replaceChildren(id==='about'?about():id==='contact'?contact():gallery(id));
  document.title='Mister Pi – '+(TABS.concat(SUBS).find(t=>t[0]===id)||[0,'Fran Godoy Portfolio'])[1];
  scrollTo(0,0);
 }
+const burger=document.getElementById('burger'),mnav=document.getElementById('mnav');
+function setMenu(open){mnav.hidden=!open;burger.setAttribute('aria-expanded',open)}
+burger.onclick=e=>{e.stopPropagation();setMenu(mnav.hidden)};
+addEventListener('click',e=>{if(!mnav.hidden&&!e.target.closest('#mnav'))setMenu(false)});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&!mnav.hidden){setMenu(false);burger.focus()}});
 addEventListener('hashchange',route);route();
 /* Close the Animation dropdown on outside click or Escape */
 const closeMenu=()=>{const d=document.querySelector('.dd.open');if(d){d.classList.remove('open');d.firstChild.setAttribute('aria-expanded','false')}};
