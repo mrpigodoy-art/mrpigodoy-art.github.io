@@ -40,7 +40,7 @@ function Save-Resized($img, [int]$w, [int]$h, [string]$path, [bool]$png, [int]$q
   }
   $bmp.Dispose()
 }
-function Save-Icon($img, [int]$size, [string]$path, $bg, [double]$pad) {
+function Save-Icon($img, [int]$size, [string]$path, $bg, [double]$pad, [string]$tint = '#b8873a') {
   if ((Test-Path $path) -and -not $Force) { return }
   $bmp = New-Object System.Drawing.Bitmap $size, $size, ([System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
   $g = [System.Drawing.Graphics]::FromImage($bmp)
@@ -48,7 +48,14 @@ function Save-Icon($img, [int]$size, [string]$path, $bg, [double]$pad) {
   if ($bg) { $g.Clear([System.Drawing.ColorTranslator]::FromHtml($bg)) } else { $g.Clear([System.Drawing.Color]::Transparent) }
   $inner = $size * (1 - 2 * $pad); $k = $inner / [math]::Max($img.Width, $img.Height)
   $w = $img.Width * $k; $h = $img.Height * $k
-  $g.DrawImage($img, [float](($size - $w) / 2), [float](($size - $h) / 2), [float]$w, [float]$h)
+  # Repaint the mark in one flat colour (keeps the original alpha, so the brush texture stays)
+  $c = [System.Drawing.ColorTranslator]::FromHtml($tint)
+  $cm = New-Object System.Drawing.Imaging.ColorMatrix
+  $cm.Matrix00 = 0; $cm.Matrix11 = 0; $cm.Matrix22 = 0; $cm.Matrix33 = 1
+  $cm.Matrix40 = $c.R / 255; $cm.Matrix41 = $c.G / 255; $cm.Matrix42 = $c.B / 255
+  $attr = New-Object System.Drawing.Imaging.ImageAttributes; $attr.SetColorMatrix($cm)
+  $x = [int](($size - $w) / 2); $y = [int](($size - $h) / 2)
+  $g.DrawImage($img, (New-Object System.Drawing.Rectangle $x, $y, ([int]$w), ([int]$h)), 0, 0, $img.Width, $img.Height, 'Pixel', $attr)
   $g.Dispose(); $bmp.Save($path, [System.Drawing.Imaging.ImageFormat]::Png); $bmp.Dispose()
 }
 function Fit([int]$w, [int]$h, [int]$long) { $s = [math]::Min(1.0, $long / [math]::Max($w, $h)); return @([int][math]::Round($w * $s), [int][math]::Round($h * $s)) }
@@ -83,9 +90,9 @@ foreach ($sec in $Sections) {
       } else {
         $io = Join-Path $out 'icons'; New-Item -ItemType Directory -Force $io | Out-Null
         foreach ($s in 16, 32, 48) { Save-Icon $img $s (Join-Path $io "favicon-$s.png") $null 0 }
-        # Home-screen icons can't be transparent on iOS: put the mark on the site's sandstone, with margin
-        Save-Icon $img 180 (Join-Path $io 'apple-touch-icon.png') '#ddcfa3' 0.12
-        foreach ($s in 192, 512) { Save-Icon $img $s (Join-Path $io "icon-$s.png") '#ddcfa3' 0.12 }
+        # Home-screen icons can't be transparent on iOS: ochre mark on the header's dark grey, with margin
+        Save-Icon $img 180 (Join-Path $io 'apple-touch-icon.png') '#36342f' 0.14
+        foreach ($s in 192, 512) { Save-Icon $img $s (Join-Path $io "icon-$s.png") '#36342f' 0.14 }
         Write-Host "HEADER icon   $($f.Name)"
       }
       $img.Dispose()
