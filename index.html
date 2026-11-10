@@ -127,6 +127,12 @@ textarea{height:160px;resize:vertical}
 .btn{justify-self:start;padding:8px 22px 11px;font:24px/1.2 VT323,monospace;color:var(--on-accent);background:var(--accent);border:0;cursor:pointer;box-shadow:inset 0 -4px 0 var(--accent-d)}
 .btn:hover{background:var(--accent-d)}
 .btn:active{box-shadow:none;padding:10px 22px 9px}
+.btn:disabled{opacity:.6;cursor:wait}
+.send{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px}
+.status{margin:0;font-size:24px;color:var(--dim)}
+.status.ok{color:#3fbfa5}.status.err{color:#e0866a}
+.status a{color:inherit}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}  /* spam trap, hidden from people */
 
 /* Lightbox */
 .lb{position:fixed;inset:0;z-index:50;display:grid;grid-template-rows:1fr auto;place-items:center;padding:20px 64px 10px;background:rgba(32,29,22,.95)}
@@ -175,6 +181,9 @@ const SUBS=[['advertising','Advertising'],['wolfboy','Wolfboy & The Everything F
 const KIND={'home':'Artwork','characters':'Character','world-building':'World Building','advertising':'Advertising','wolfboy':'Wolfboy','house-broken':'House Broken'};
 const DATA=window.GALLERIES||{};
 const EMAIL='mrpigodoy@gmail.com';
+/* Contact form delivery: paste the Formspree form URL here (https://formspree.io/f/xxxxxxx).
+   While it is empty, "Send Message" opens the visitor's mail app instead. */
+const FORM_ENDPOINT='https://formspree.io/f/xvkapkzd';
 const tabs=document.getElementById('tabs'),view=document.getElementById('view');
 const calm=matchMedia('(prefers-reduced-motion:reduce)').matches;
 
@@ -292,8 +301,26 @@ function contact(){
  const a=el('a',null,EMAIL);a.href='mailto:'+EMAIL;say.appendChild(a);
  f.appendChild(say);typewrite(say);
  const form=el('form');
- form.innerHTML='<div class="two"><input name="n" placeholder="Name" aria-label="Name" required><input name="e" type="email" placeholder="Email" aria-label="Email" required></div><textarea class="chip-r" name="m" placeholder="Message" aria-label="Message" required></textarea><button class="btn" type="submit">Send Message</button>';
- form.onsubmit=e=>{e.preventDefault();location.href='mailto:'+EMAIL+'?subject='+encodeURIComponent('Portfolio inquiry from '+form.n.value)+'&body='+encodeURIComponent(form.m.value+'\n\n'+form.n.value+' ('+form.e.value+')')};
+ form.innerHTML='<div class="two"><input name="name" placeholder="Name" aria-label="Name" autocomplete="name" required><input name="email" type="email" placeholder="Email" aria-label="Email" autocomplete="email" required></div><textarea class="chip-r" name="message" placeholder="Message" aria-label="Message" required></textarea>'
+  +'<input type="text" name="_gotcha" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">'
+  +'<div class="send"><button class="btn" type="submit">Send Message</button><p class="status" role="status" aria-live="polite"></p></div>';
+ const status=form.querySelector('.status'),btn=form.querySelector('.btn');
+ const v=n=>form.elements[n].value;
+ const mailto=()=>location.href='mailto:'+EMAIL+'?subject='+encodeURIComponent('Portfolio inquiry from '+v('name'))+'&body='+encodeURIComponent(v('message')+'\n\n'+v('name')+' ('+v('email')+')');
+ form.onsubmit=async e=>{
+  e.preventDefault();
+  if(!FORM_ENDPOINT)return mailto();   /* no Formspree form yet: open the visitor's mail app */
+  btn.disabled=true;btn.textContent='Sending…';status.className='status';status.textContent='';
+  try{
+   const data=new FormData(form);data.append('_subject','Portfolio inquiry from '+v('name'));
+   const r=await fetch(FORM_ENDPOINT,{method:'POST',body:data,headers:{Accept:'application/json'}});
+   if(!r.ok)throw new Error(r.status);
+   form.reset();status.className='status ok';status.textContent='Thanks! Your message is on its way.';
+  }catch(err){
+   status.className='status err';status.innerHTML='';
+   status.append('Something went wrong. Please email me at ');const a=el('a',null,EMAIL);a.href='mailto:'+EMAIL;status.append(a,'.');
+  }finally{btn.disabled=false;btn.textContent='Send Message'}
+ };
  f.appendChild(form);return f;
 }
 
