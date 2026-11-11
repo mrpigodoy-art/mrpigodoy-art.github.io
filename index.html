@@ -389,13 +389,13 @@ function route(){
   const b=el('button',(h===id||(h==='animation'&&sub))?'on':'',l);
   if(h!=='animation'){b.onclick=()=>location.hash=h;return b}
   /* Animation: click opens the overview; the projects are in the dropdown (hover on desktop).
-     On touch screens without hover, the first tap opens the dropdown, which also lists the overview. */
+     On touch screens without hover, the first tap opens the dropdown and a second tap opens the overview. */
   const dd=el('div','dd'),menu=el('div','menu');
   b.setAttribute('aria-haspopup','true');b.setAttribute('aria-expanded','false');
   b.onclick=e=>{e.stopPropagation();
    if(hoverable.matches){dd.classList.remove('open');location.hash='animation';return}
-   const o=dd.classList.toggle('open');b.setAttribute('aria-expanded',o)};
-  const all=el('button','all'+(id==='animation'?' on':''),'All animation');all.onclick=()=>{dd.classList.remove('open');location.hash='animation'};menu.appendChild(all);
+   if(dd.classList.contains('open')){dd.classList.remove('open');location.hash='animation';return}   /* touch: 2nd tap opens the overview */
+   dd.classList.add('open');b.setAttribute('aria-expanded','true')};
   SUBS.forEach(([sh,sl])=>{const s=el('button',sh===id?'on':'',sl);s.onclick=()=>{dd.classList.remove('open');location.hash=sh};menu.appendChild(s)});
   dd.append(b,menu);return dd;
  }));
