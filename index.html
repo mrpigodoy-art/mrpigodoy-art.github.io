@@ -208,7 +208,7 @@ footer p{margin:10px 0 0}
  <nav class="soc" id="soc" aria-label="Social links"></nav>
  <p>Copyright © All rights reserved.</p>
 </footer>
-<script src="galleries.js"></script>
+<script src="galleries.js?v=4d9a85e4"></script>
 <script>
 const TABS=[['characters','Characters'],['world-building','World Building'],['animation','Animation'],['about','About'],['contact','Contact']];
 const SUBS=[['advertising','Advertising'],['wolfboy','Wolfboy & The Everything Factory'],['house-broken','House Broken']];
@@ -245,15 +245,6 @@ function pixelIcon(rows){
 const SOCIAL=[['X','https://twitter.com/_MrPG'],['Facebook','https://www.facebook.com/mrpgodoy/'],['Instagram','https://www.instagram.com/_mr.pi/'],['LinkedIn','https://www.linkedin.com/in/fran-godoy-a3a518220/']];
 document.getElementById('soc').innerHTML=SOCIAL.map(([n,u])=>`<a href="${u}" target="_blank" rel="noopener" aria-label="${n}" title="${n}">${pixelIcon(ICONS[n])}</a>`).join('');
 
-/* Placeholder sprites for sections without real images yet */
-function rng(s){return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
-function sprite(seed){
- const pal=['#e3a14a','#e2d2a0','#a89c6c','#2a251b'],r=rng(seed*7919+13),m=[],c=document.createElement('canvas');c.width=c.height=10;const x=c.getContext('2d');
- for(let y=0;y<8;y++){m[y]=[];for(let i=0;i<4;i++){const v=r()<.35+.15*i-.07*Math.abs(y-3.5)?Math.floor(r()*3):-1;m[y][i]=v;m[y][7-i]=v}}
- const f=(X,Y)=>X>=0&&X<8&&Y>=0&&Y<8&&m[Y][X]>=0;
- for(let y=0;y<8;y++)for(let i=0;i<8;i++){if(f(i,y)){x.fillStyle=pal[m[y][i]];x.fillRect(i+1,y+1,1,1)}else if(f(i+1,y)||f(i-1,y)||f(i,y+1)||f(i,y-1)){x.fillStyle=pal[3];x.fillRect(i+1,y+1,1,1)}}
- return c;
-}
 
 /* Typewriter: reveals every text node inside root, in order (links included) */
 function typewrite(root,speed=22){
@@ -304,7 +295,7 @@ function lightbox(items,start,label){
 function gallery(id){
  const items=DATA[id]||[],real=items.length>0,kind=KIND[id];
  const wrap=el('div','masonry'),tiles=[],ratios=[],imgs=[];
- const n=real?items.length:12;
+ const n=items.length;   /* no data (e.g. an outdated cached galleries.js): show nothing rather than placeholders */
  for(let i=0;i<n;i++){
   const b=el('button','tile');b.setAttribute('aria-label',kind+' '+pad(i+1));
   if(real){
@@ -312,7 +303,7 @@ function gallery(id){
    t.width=1100;t.height=Math.round(1100*it.h/it.w);t.loading='lazy';t.decoding='async';t.onload=()=>t.classList.add('ok');if(t.complete)t.classList.add('ok');
    const chip=i%5===2?'chip-t':i%7===4?'chip-r':i%6===5?'chip-b':i%11===8?'chip-l':'';if(chip)t.classList.add(chip);
    b.appendChild(t);b.onclick=()=>lightbox(items,i,kind);ratios.push(it.h/it.w);imgs[i]=t;
-  }else{b.appendChild(sprite(i+id.length*31));b.style.cursor='default';ratios.push(1)}
+  }
   tiles.push(b);
  }
  let mode='';
@@ -337,7 +328,7 @@ function gallery(id){
 
 function about(){
  const A=DATA.about||{},w=el('div','about');
- const card=A.photo?img(A.photo,'Fran Godoy'):sprite(404);
+ const card=img(A.photo||'','Fran Godoy');
  card.className='photo chip-b';
  const right=el('div'),bubble=el('div','bubble'),box=el('div','bubble-box chip-t');
  box.innerHTML='<h2>Hey!</h2><p>I’m Fran, concept and visual development artist in the animation and video games industry.</p><p>Thanks for stopping by,</p><p>Cheers!</p>';
