@@ -33,6 +33,8 @@
  --accent:#c9b06e;  /* ochre khaki, a step deeper than the text boxes: fills and lines */
  --accent-d:#b39a58;/* accent, hover/pressed */
  --accent-t:#d6bd7a;/* same hue, light enough for text on the dark page */
+ --teal:#3fbfa5;    /* small blue-green accent: active section, links, hovers (on the dark page) */
+ --teal-d:#15786a;  /* same accent on the light khaki boxes */
  --on-accent:#3b372f;
  --title:#c08f3d;   /* site title: the yellow of the "I" in the original logo */
  --cream:#fbf7ec;
@@ -74,7 +76,7 @@ header{position:relative;z-index:5;background:var(--head)}
 .tabs{display:flex;flex-wrap:wrap;gap:0 26px}
 .tabs button{position:relative;background:none;border:0;color:var(--dim);font:24px/1.3 VT323,monospace;padding:2px 0 2px 16px;cursor:pointer;text-align:left}
 .tabs button:hover{color:var(--ink)}
-.tabs button.on{color:var(--accent-t)}
+.tabs button.on{color:var(--teal)}
 .tabs button:hover::before,.tabs button.on::before{content:"▸";position:absolute;left:0}
 /* Animation dropdown (like the old site): opens on hover or tap, lists the three projects */
 .dd{position:relative}
@@ -83,8 +85,8 @@ header{position:relative;z-index:5;background:var(--head)}
 .dd.open .menu{display:flex}
 @media(hover:hover){.dd:hover .menu{display:flex}}
 .menu button{color:#6e6248}
-.menu button:hover,.menu button.on{color:var(--dark)}
-button:focus-visible,a:focus-visible{outline:3px solid var(--accent-t);outline-offset:3px}
+.menu button:hover{color:var(--dark)}.menu button.on{color:var(--teal-d)}
+button:focus-visible,a:focus-visible{outline:3px solid var(--teal);outline-offset:3px}
 [hidden]{display:none!important}
 
 main{flex:1;max-width:1320px;width:100%;margin:0 auto;padding:34px 28px 10px}
@@ -122,7 +124,7 @@ main.wide{max-width:none;padding:12px 12px 10px}
 
 /* Contact */
 h1{font:400 32px/1.1 VT323,monospace;color:var(--accent-t);margin:0 0 14px}
-.say a{color:#3fbfa5}  /* the earlier Moonlighter green, lightened to read on the dark page */
+.say a{color:var(--teal)}
 .say{max-width:760px;margin:0 0 26px;min-height:2.6em;font-size:26px;line-height:1.3}
 .bubble-box p{font-size:26px;line-height:1.3}
 form{display:grid;gap:12px;max-width:760px}
@@ -137,7 +139,7 @@ textarea{height:160px;resize:vertical}
 .btn:disabled{opacity:.6;cursor:wait}
 .send{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px}
 .status{margin:0;font-size:24px;color:var(--dim)}
-.status.ok{color:#3fbfa5}.status.err{color:#e0866a}
+.status.ok{color:var(--teal)}.status.err{color:#e0866a}
 .status a{color:inherit}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}  /* spam trap, hidden from people */
 
@@ -149,14 +151,14 @@ textarea{height:160px;resize:vertical}
 @media(prefers-reduced-motion:reduce){.lb{animation:none}}
 .lb p{margin:0;color:var(--cream)}
 .lb button{position:absolute;background:none;border:0;color:var(--cream);font:52px/1 VT323,monospace;cursor:pointer;padding:8px 14px}
-.lb button:hover{color:var(--khaki)}
+.lb button:hover{color:var(--teal)}
 .lb .x{top:6px;right:8px;font-size:40px}.lb .pv{left:4px;top:50%;transform:translateY(-50%)}.lb .nx{right:4px;top:50%;transform:translateY(-50%)}
 
 /* Footer */
 footer{text-align:center;padding:56px 16px 24px;color:var(--dim);font-size:20px}
 .soc{display:flex;justify-content:center;gap:6px}
 .soc a{display:grid;place-items:center;padding:6px;color:var(--dim);transition:color .2s}
-.soc a:hover{color:var(--accent-t)}
+.soc a:hover{color:var(--teal)}
 .soc svg{width:15px;height:15px;shape-rendering:crispEdges}
 footer p{margin:10px 0 0}
 
@@ -168,7 +170,7 @@ footer p{margin:10px 0 0}
 .burger[aria-expanded="true"]{background:var(--khaki-d);box-shadow:inset 0 4px 0 #b9a571}
 .mnav{position:absolute;top:calc(100% - 4px);right:16px;z-index:30;min-width:250px;max-width:calc(100vw - 32px);padding:12px 18px 16px 12px;background:var(--khaki);box-shadow:inset 0 -5px 0 var(--khaki-d);flex-direction:column}
 .mnav button{position:relative;background:none;border:0;text-align:left;color:#6e6248;font:24px/1.3 VT323,monospace;padding:5px 0 5px 18px;cursor:pointer}
-.mnav button:hover,.mnav button.on{color:var(--dark)}
+.mnav button:hover{color:var(--dark)}.mnav button.on{color:var(--teal-d)}
 .mnav button:hover::before,.mnav button.on::before{content:"▸";position:absolute;left:2px}
 .mnav .grp{color:#8f8264;font-size:24px;padding:5px 0 1px 18px}
 .mnav .sub{padding-left:36px}.mnav .sub:hover::before,.mnav .sub.on::before{left:20px}
