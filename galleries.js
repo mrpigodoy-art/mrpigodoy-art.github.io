@@ -854,6 +854,90 @@ window.GALLERIES = {
                            "title":  ""
                        },
                        {
+                           "src":  "images/characters/gut-forgotten",
+                           "w":  7086,
+                           "h":  2526,
+                           "title":  ""
+                       },
+                       {
+                           "src":  "images/characters/gut-digesstedlord-02",
+                           "w":  8236,
+                           "h":  2860,
+                           "title":  ""
+                       },
+                       {
+                           "src":  "images/characters/manto04",
+                           "w":  2044,
+                           "h":  2045,
+                           "title":  ""
+                       },
+                       {
+                           "src":  "images/characters/manto01",
+                           "w":  1129,
+                           "h":  1129,
+                           "title":  ""
+                       },
+                       {
+                           "src":  "images/characters/manto05",
+                           "w":  3180,
+                           "h":  2550,
+                           "title":  ""
+                       },
+                       {
+                           "src":  "images/characters/manto02",
+                           "w":  1998,
+                           "h":  1999,
+                           "title":  ""
+                       },
+                       {
+                           "src":  "images/characters/manto03",
+                           "w":  1500,
+                           "h":  1500,
+                           "title":  ""
+                       },
+                       {
+                           "src":  "images/characters/mask",
+                           "w":  1164,
+                           "h":  1340,
+                           "title":  ""
+                       },
+                       {
+                           "src":  "images/characters/starlinasquare",
+                           "w":  2585,
+                           "h":  2584,
+                           "title":  ""
+                       },
+                       {
+                           "src":  "images/characters/welcome",
+                           "w":  1162,
+                           "h":  1163,
+                           "title":  ""
+                       },
+                       {
+                           "src":  "images/characters/gut-toothspitter-01",
+                           "w":  2763,
+                           "h":  1183,
+                           "title":  ""
+                       },
+                       {
+                           "src":  "images/characters/gut-toothspitter-03",
+                           "w":  5477,
+                           "h":  1183,
+                           "title":  ""
+                       },
+                       {
+                           "src":  "images/characters/pipita01",
+                           "w":  2822,
+                           "h":  2160,
+                           "title":  ""
+                       },
+                       {
+                           "src":  "images/characters/moli",
+                           "w":  3508,
+                           "h":  2480,
+                           "title":  ""
+                       },
+                       {
                            "src":  "images/characters/abyss-clutch",
                            "w":  5323,
                            "h":  1080,
@@ -872,15 +956,15 @@ window.GALLERIES = {
                            "title":  ""
                        },
                        {
-                           "src":  "images/characters/acolyte-ch",
-                           "w":  7638,
-                           "h":  2526,
+                           "src":  "images/characters/gut-hideway",
+                           "w":  4808,
+                           "h":  1183,
                            "title":  ""
                        },
                        {
-                           "src":  "images/characters/bb-dtiys",
-                           "w":  2480,
-                           "h":  3508,
+                           "src":  "images/characters/acolyte-ch",
+                           "w":  7638,
+                           "h":  2526,
                            "title":  ""
                        },
                        {
@@ -896,21 +980,9 @@ window.GALLERIES = {
                            "title":  ""
                        },
                        {
-                           "src":  "images/characters/funky-hunters-mrpi",
-                           "w":  2480,
-                           "h":  3508,
-                           "title":  ""
-                       },
-                       {
                            "src":  "images/characters/gut-chearlyexp",
                            "w":  1920,
                            "h":  1080,
-                           "title":  ""
-                       },
-                       {
-                           "src":  "images/characters/gut-digesstedlord-02",
-                           "w":  8236,
-                           "h":  2860,
                            "title":  ""
                        },
                        {
@@ -932,87 +1004,9 @@ window.GALLERIES = {
                            "title":  ""
                        },
                        {
-                           "src":  "images/characters/gut-forgotten",
-                           "w":  7086,
-                           "h":  2526,
-                           "title":  ""
-                       },
-                       {
-                           "src":  "images/characters/gut-hideway",
-                           "w":  4808,
-                           "h":  1183,
-                           "title":  ""
-                       },
-                       {
                            "src":  "images/characters/gut-skullfarmer-ta",
                            "w":  5947,
                            "h":  1080,
-                           "title":  ""
-                       },
-                       {
-                           "src":  "images/characters/gut-toothspitter-01",
-                           "w":  2763,
-                           "h":  1183,
-                           "title":  ""
-                       },
-                       {
-                           "src":  "images/characters/gut-toothspitter-03",
-                           "w":  5477,
-                           "h":  1183,
-                           "title":  ""
-                       },
-                       {
-                           "src":  "images/characters/manto01",
-                           "w":  1129,
-                           "h":  1129,
-                           "title":  ""
-                       },
-                       {
-                           "src":  "images/characters/manto02",
-                           "w":  1998,
-                           "h":  1999,
-                           "title":  ""
-                       },
-                       {
-                           "src":  "images/characters/manto03",
-                           "w":  1500,
-                           "h":  1500,
-                           "title":  ""
-                       },
-                       {
-                           "src":  "images/characters/manto04",
-                           "w":  2044,
-                           "h":  2045,
-                           "title":  ""
-                       },
-                       {
-                           "src":  "images/characters/manto05",
-                           "w":  3180,
-                           "h":  2550,
-                           "title":  ""
-                       },
-                       {
-                           "src":  "images/characters/mask",
-                           "w":  1164,
-                           "h":  1340,
-                           "title":  ""
-                       },
-                       {
-                           "src":  "images/characters/moli",
-                           "w":  3508,
-                           "h":  2480,
-                           "title":  ""
-                       },
-                       {
-                           "src":  "images/characters/pipita01",
-                           "w":  2822,
-                           "h":  2160,
-                           "title":  ""
-                       },
-                       {
-                           "src":  "images/characters/starlinasquare",
-                           "w":  2585,
-                           "h":  2584,
                            "title":  ""
                        },
                        {
@@ -1040,9 +1034,15 @@ window.GALLERIES = {
                            "title":  ""
                        },
                        {
-                           "src":  "images/characters/welcome",
-                           "w":  1162,
-                           "h":  1163,
+                           "src":  "images/characters/funky-hunters-mrpi",
+                           "w":  2480,
+                           "h":  3508,
+                           "title":  ""
+                       },
+                       {
+                           "src":  "images/characters/bb-dtiys",
+                           "w":  2480,
+                           "h":  3508,
                            "title":  ""
                        }
                    ],

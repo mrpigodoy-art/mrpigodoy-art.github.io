@@ -67,7 +67,18 @@ function HasAlpha($img) {
   for ($y = 0; $y -lt $b.Height; $y += $sy) { for ($x = 0; $x -lt $b.Width; $x += $sx) { if ($b.GetPixel($x, $y).A -lt 250) { $b.Dispose(); return $true } } }
   $b.Dispose(); return $false
 }
-function Files($dir) { Get-ChildItem $dir -File | Where-Object { $_.Extension -match '^\.(png|jpe?g)$' } | Sort-Object { [regex]::Replace($_.Name, '\d+', { $args[0].Value.PadLeft(8, '0') }) } }
+# Order: if orden/<SECTION>.txt exists, files listed there come first in that order; the rest follow in natural name order.
+function Files($dir) {
+  $list = Get-ChildItem $dir -File | Where-Object { $_.Extension -match '^\.(png|jpe?g)$' }
+  $orderFile = Join-Path $root ("orden\" + (Split-Path $dir -Leaf) + '.txt')
+  $rank = @{}
+  if (Test-Path $orderFile) {
+    $n = 0
+    foreach ($l in Get-Content $orderFile -Encoding UTF8) { $t = $l.Trim(); if ($t -and -not $t.StartsWith('#')) { $rank[$t.ToLower()] = $n++ } }
+  }
+  $list | Sort-Object @{ Expression = { if ($rank.ContainsKey($_.Name.ToLower())) { $rank[$_.Name.ToLower()] } else { 100000 } } },
+                      @{ Expression = { [regex]::Replace($_.Name, '\d+', { $args[0].Value.PadLeft(8, '0') }) } }
+}
 
 # Existing galleries.js data is kept for sections not rebuilt this run
 $data = @{}
