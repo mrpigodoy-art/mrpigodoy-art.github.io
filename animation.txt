@@ -1,0 +1,26 @@
+﻿# Animation overview (shown when clicking "Animation"), in display order.
+# One original file name per line, from ADVERTISING, WOLFBOY or HOUSEBROKEN.
+# After editing, run:  .\build-images.ps1 -Sections HOME
+2503_Discord_BDay_MedievalFantasy_CleanLayersForComp.png
+BBWB_ExcaliboomFX_CL_201213.png
+LeCube-Yuga-Style02_V02.png
+BBHB_MicrowaveExplosion_CL_v01.png
+BBWW_HeartoftheFactoryLightingTreatment BaseofHeart_CL_V01.jpg
+Domestos-Styleframe_06_v01_BLUE.png
+BBWB_FinaleSeedGlowFX02_CL_V01.jpg
+LeCube-Yuga-Style01-FNL-2.35.png
+BBHB_LightningTowerFX_CL_v01.png
+BBWW_WolfboyBackRimLights_CL_V01.jpg
+Domestos_Styleframe_04_v02.png
+BBWB_BlanketXandra_CL_201022.jpg
+GERM01.png
+BBHB_MotorcycleWithSidecar_CL_v03.png
+BBWB_BubbleSlide_CL_210205.png
+DOMEST-DRAGON-CLOSEUP-V01-BLUE.png
+BBWB_PlantGrowthOverlays_CL_201218.png
+GERM-03.png
+BBHB_WarExplosion_CL_v01.png
+BBWB_GuardianSpryte187Shield_CL_201009.jpg
+GERM-02.png
+1BBWB00_MumVanColor_RO_200831.jpg
+DOMESTO-DRAGON-TA-V04-BLUE.png

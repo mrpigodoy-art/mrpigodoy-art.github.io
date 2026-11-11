@@ -170,20 +170,23 @@ foreach ($sec in $Sections) {
   $data[$id] = $list
 }
 
-# Home: a curated list (home.txt) of artworks already built in their sections
-$homeTxt = Join-Path $root 'home.txt'
-if (Test-Path $homeTxt) {
-  $homeList = @()
-  foreach ($line in Get-Content $homeTxt -Encoding UTF8) {
+# Curated pages: lists of artworks already built in their sections.
+#   home.txt      -> the landing page
+#   animation.txt -> the Animation overview (shown when clicking "Animation")
+foreach ($cur in @(@('home', 'home.txt'), @('animation', 'animation.txt'))) {
+  $txt = Join-Path $root $cur[1]
+  if (-not (Test-Path $txt)) { continue }
+  $list = @()
+  foreach ($line in Get-Content $txt -Encoding UTF8) {
     $name = $line.Trim()
     if (-not $name -or $name.StartsWith('#')) { continue }
     $slug = Slug ([IO.Path]::GetFileNameWithoutExtension($name))
     $hit = $null
     foreach ($k in $IDS.Values) { if ($data[$k]) { $hit = @($data[$k]) | Where-Object { $_.src -eq "images/$k/$slug" } | Select-Object -First 1 }; if ($hit) { break } }
-    if ($hit) { $homeList += $hit } else { Write-Warning "home.txt: '$name' not found in any built section" }
+    if ($hit) { $list += $hit } else { Write-Warning "$($cur[1]): '$name' not found in any built section" }
   }
-  $data['home'] = $homeList
-  Write-Host "Home: $($homeList.Count) artworks"
+  $data[$cur[0]] = $list
+  Write-Host "$($cur[0]): $($list.Count) artworks"
 }
 
 New-Item -ItemType Directory -Force $out | Out-Null

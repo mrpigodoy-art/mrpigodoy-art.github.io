@@ -212,14 +212,14 @@ footer p{margin:10px 0 0}
 <script>
 const TABS=[['characters','Characters'],['world-building','World Building'],['animation','Animation'],['about','About'],['contact','Contact']];
 const SUBS=[['advertising','Advertising'],['wolfboy','Wolfboy & The Everything Factory'],['house-broken','House Broken']];
-const KIND={'home':'Artwork','characters':'Character','world-building':'World Building','advertising':'Advertising','wolfboy':'Wolfboy','house-broken':'House Broken'};
+const KIND={'home':'Artwork','animation':'Animation','characters':'Character','world-building':'World Building','advertising':'Advertising','wolfboy':'Wolfboy','house-broken':'House Broken'};
 const DATA=window.GALLERIES||{};
 const EMAIL='mrpigodoy@gmail.com';
 /* Contact form delivery: paste the Formspree form URL here (https://formspree.io/f/xxxxxxx).
    While it is empty, "Send Message" opens the visitor's mail app instead. */
 const FORM_ENDPOINT='https://formspree.io/f/xvkapkzd';
 const tabs=document.getElementById('tabs'),view=document.getElementById('view');
-const narrow=matchMedia('(max-width:860px)');
+const narrow=matchMedia('(max-width:860px)'),hoverable=matchMedia('(hover:hover)');
 const calm=matchMedia('(prefers-reduced-motion:reduce)').matches;
 
 /* Image protection (good-faith signal only) */
@@ -382,22 +382,26 @@ function contact(){
 
 function route(){
  let id=location.hash.slice(1);
- /* Animation has no page of its own: one of its projects must be chosen from the dropdown */
- /* Home is the landing page; it has no menu item and is reached through MISTERPI */
+ /* Home is the landing page (no menu item, reached through MISTER PI); Animation has its own overview page */
  if(!(id in KIND||id==='about'||id==='contact'))id='home';
  const sub=SUBS.some(s=>s[0]===id);
  tabs.replaceChildren(...TABS.map(([h,l])=>{
   const b=el('button',(h===id||(h==='animation'&&sub))?'on':'',l);
   if(h!=='animation'){b.onclick=()=>location.hash=h;return b}
+  /* Animation: click opens the overview; the projects are in the dropdown (hover on desktop).
+     On touch screens without hover, the first tap opens the dropdown, which also lists the overview. */
   const dd=el('div','dd'),menu=el('div','menu');
   b.setAttribute('aria-haspopup','true');b.setAttribute('aria-expanded','false');
-  b.onclick=e=>{e.stopPropagation();const o=dd.classList.toggle('open');b.setAttribute('aria-expanded',o)};
+  b.onclick=e=>{e.stopPropagation();
+   if(hoverable.matches){dd.classList.remove('open');location.hash='animation';return}
+   const o=dd.classList.toggle('open');b.setAttribute('aria-expanded',o)};
+  const all=el('button','all'+(id==='animation'?' on':''),'All animation');all.onclick=()=>{dd.classList.remove('open');location.hash='animation'};menu.appendChild(all);
   SUBS.forEach(([sh,sl])=>{const s=el('button',sh===id?'on':'',sl);s.onclick=()=>{dd.classList.remove('open');location.hash=sh};menu.appendChild(s)});
   dd.append(b,menu);return dd;
  }));
- /* Mobile panel: same sections, with the Animation projects listed under their group */
+ /* Mobile panel: same sections; "Animation" opens the overview and its projects are listed under it */
  const mb=(h,l,cls)=>{const b=el('button',(cls||'')+(h===id?' on':''),l);b.onclick=()=>{setMenu(false);location.hash=h};return b};
- mnav.replaceChildren(...TABS.flatMap(([h,l])=>h!=='animation'?[mb(h,l)]:[el('div','grp',l),...SUBS.map(([sh,sl])=>mb(sh,sl,'sub'))]));
+ mnav.replaceChildren(...TABS.flatMap(([h,l])=>h!=='animation'?[mb(h,l)]:[mb('animation',l),...SUBS.map(([sh,sl])=>mb(sh,sl,'sub'))]));
  setMenu(false);
  view.classList.toggle('wide',id in KIND);
  view.replaceChildren(id==='about'?about():id==='contact'?contact():gallery(id));
