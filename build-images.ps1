@@ -58,6 +58,24 @@ function Save-Icon($img, [int]$size, [string]$path, $bg, [double]$pad, [string]$
   $g.DrawImage($img, (New-Object System.Drawing.Rectangle $x, $y, ([int]$w), ([int]$h)), 0, 0, $img.Width, $img.Height, 'Pixel', $attr)
   $g.Dispose(); $bmp.Save($path, [System.Drawing.Imaging.ImageFormat]::Png); $bmp.Dispose()
 }
+# Crop a transparent image to the box of its visible pixels (alpha > 8), plus a 2% margin
+function Trim-Transparent($img) {
+  $b = New-Object System.Drawing.Bitmap $img
+  $rect = New-Object System.Drawing.Rectangle 0, 0, $b.Width, $b.Height
+  $d = $b.LockBits($rect, 'ReadOnly', ([System.Drawing.Imaging.PixelFormat]::Format32bppArgb))
+  $bytes = New-Object byte[] ($d.Stride * $b.Height)
+  [System.Runtime.InteropServices.Marshal]::Copy($d.Scan0, $bytes, 0, $bytes.Length); $b.UnlockBits($d)
+  $minX = $b.Width; $minY = $b.Height; $maxX = -1; $maxY = -1; $st = $d.Stride
+  for ($y = 0; $y -lt $b.Height; $y++) { $row = $y * $st
+    for ($x = 0; $x -lt $b.Width; $x++) { if ($bytes[$row + $x * 4 + 3] -gt 8) {
+      if ($x -lt $minX) { $minX = $x }; if ($x -gt $maxX) { $maxX = $x }; if ($y -lt $minY) { $minY = $y }; $maxY = $y } } }
+  if ($maxX -lt 0) { $b.Dispose(); return $img }
+  $m = [int]([math]::Max($maxX - $minX, $maxY - $minY) * 0.02)
+  $minX = [math]::Max(0, $minX - $m); $minY = [math]::Max(0, $minY - $m)
+  $maxX = [math]::Min($b.Width - 1, $maxX + $m); $maxY = [math]::Min($b.Height - 1, $maxY + $m)
+  $crop = $b.Clone((New-Object System.Drawing.Rectangle $minX, $minY, ($maxX - $minX + 1), ($maxY - $minY + 1)), $b.PixelFormat)
+  $b.Dispose(); return $crop
+}
 function Fit([int]$w, [int]$h, [int]$long) { $s = [math]::Min(1.0, $long / [math]::Max($w, $h)); return @([int][math]::Round($w * $s), [int][math]::Round($h * $s)) }
 function Slug([string]$name) { ($name.ToLower() -replace '[^a-z0-9]+', '-').Trim('-') }
 function HasAlpha($img) {
@@ -119,8 +137,10 @@ foreach ($sec in $Sections) {
       $img = [System.Drawing.Image]::FromFile($f.FullName)
       $slug = Slug $f.BaseName
       if (HasAlpha $img) {
-        $s = Fit $img.Width $img.Height 360
-        Save-Resized $img $s[0] $s[1] (Join-Path $o "logo-$slug.png") $true
+        $trim = Trim-Transparent $img          # drop the empty margin around the logo
+        $s = Fit $trim.Width $trim.Height 360
+        Save-Resized $trim $s[0] $s[1] (Join-Path $o "logo-$slug.png") $true
+        if ($trim -ne $img) { $trim.Dispose() }
         $logos += "images/about/logo-$slug.png"
       } else {
         $s = Fit $img.Width $img.Height 900
